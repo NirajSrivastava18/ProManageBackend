@@ -1,4 +1,4 @@
-const User = require('../models/userModel');
+const { userModel } = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
@@ -24,9 +24,9 @@ const register = async (req, res) => {
       });
     }
     const encryption = await bcrypt.hash(Password, 10);
-    const existingUser = await User.findOne({ email });
+    const existingUser = await userModel.findOne({ email });
     if (!existingUser) {
-      const user = await User.create({
+      const user = await userModel.create({
         Name,
         email,
         Password: encryption,
@@ -40,6 +40,7 @@ const register = async (req, res) => {
         message: 'User created successfully',
         jwttoken: jwttoken,
         Name: user.Name,
+        id: user._id,
       });
     } else {
       res.status(409).json({
@@ -59,7 +60,7 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { email, Password } = req.body;
-    const user = await User.findOne({ email });
+    const user = await userModel.findOne({ email });
     if (user) {
       let PasswordMatch = await bcrypt.compare(Password, user.Password);
       if (PasswordMatch) {
@@ -71,6 +72,7 @@ const login = async (req, res) => {
           message: 'User LoggedIn Successfully',
           jwttoken: jwttoken,
           Name: user.Name,
+          id: user._id,
         });
       } else {
         res.json({
@@ -95,12 +97,12 @@ const login = async (req, res) => {
 const UpdatePassword = async (req, res) => {
   const { Name, oldPassword, newPassword } = req.body;
   try {
-    const user = await User.findOne({ Name });
+    const user = await userModel.findOne({ Name });
     const isMatch = await bcrypt.compare(oldPassword, user.Password);
 
     if (isMatch) {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
-      await User.findOneAndUpdate(
+      await userModel.findOneAndUpdate(
         { Name },
         { Password: hashedPassword },
         { new: true }

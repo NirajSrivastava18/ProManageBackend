@@ -4,8 +4,10 @@ const {
   login,
   logout,
   UpdatePassword,
+  getuserbyid,
 } = require('../controllers/userController');
-const { isLoggedIn } = require('../middleware/isLoggedIn');
+
+const { isLoggedIn } = require('../middleware/auth');
 
 const router = express.Router();
 

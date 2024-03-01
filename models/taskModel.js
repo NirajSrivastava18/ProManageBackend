@@ -9,7 +9,11 @@ const checkList = new Schema({
 const TaskSchema = new Schema(
   {
     title: { type: String, required: true },
-    priority: { type: String, required: true, enum: ['low', 'medium', 'high'] },
+    priority: {
+      type: String,
+      required: true,
+      enum: ['low', 'moderate', 'high'],
+    },
     dueDate: { type: Date },
     user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     checklist: [checkList],
@@ -17,6 +21,7 @@ const TaskSchema = new Schema(
       type: String,
       required: true,
       enum: ['backlog', 'todo', 'in-progress', 'done'],
+      default: 'todo',
     },
   },
   { timestamps: true }

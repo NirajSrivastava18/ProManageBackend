@@ -1,4 +1,4 @@
-const { userModel } = require('../models/userModel');
+const userModel = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
@@ -32,7 +32,7 @@ const register = async (req, res) => {
         Password: encryption,
       });
       const jwttoken = jwt.sign(user.toJSON(), process.env.JWT, {
-        expiresIn: 60 * 30,
+        expiresIn: 60 * 60 * 1000,
       });
 
       res.status(201).json({

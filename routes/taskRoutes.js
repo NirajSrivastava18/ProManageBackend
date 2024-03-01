@@ -7,6 +7,7 @@ const {
   deleteTaskController,
   updateTaskStateController,
   filterTasksController,
+  checkListController,
 } = require('../controllers/TaskController');
 const { isLoggedIn } = require('../middleware/auth');
 
@@ -25,5 +26,11 @@ router.delete('/delete-task/:id', isLoggedIn, deleteTaskController);
 router.put('/update-state/:id', isLoggedIn, updateTaskStateController);
 
 router.get('/get-filter', isLoggedIn, filterTasksController);
+
+router.put(
+  '/tasks/:taskId/checklists/:checklistId',
+  isLoggedIn,
+  checkListController.updateIsCheck
+);
 
 module.exports = router;

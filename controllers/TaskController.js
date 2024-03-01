@@ -5,12 +5,6 @@ const createTaskController = async (req, res) => {
   try {
     const { title, priority, dueDate, user, checklist, state } = req.body;
 
-    // Check if the user exists
-    // const userExists = await userModel.findById(user);
-    // if (!userExists) {
-    //   return res.status(404).json({ error: 'User not found' });
-    // }
-
     // Create a new task
     const newTask = new taskModel({
       title,
@@ -234,6 +228,34 @@ const filterTasksController = async (req, res) => {
   }
 };
 
+const checkListController = {};
+
+checkListController.updateIsCheck = async (req, res) => {
+  try {
+    const { taskId, checklistId } = req.params;
+    const { ischeck } = req.body;
+
+    const task = await taskModel.findById(taskId);
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+
+    const checklistIndex = task.checklist.findIndex(
+      (checklistItem) => checklistItem._id.toString() === checklistId
+    );
+
+    if (checklistIndex >= 0 && checklistIndex < task.checklist.length) {
+      task.checklist[checklistIndex].ischeck = ischeck;
+      const updatedTask = await task.save();
+      res.json(updatedTask);
+    } else {
+      res.status(400).json({ message: 'Invalid checklist id' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   createTaskController,
   getTaskByIdController,
@@ -242,4 +264,5 @@ module.exports = {
   deleteTaskController,
   updateTaskStateController,
   filterTasksController,
+  checkListController,
 };

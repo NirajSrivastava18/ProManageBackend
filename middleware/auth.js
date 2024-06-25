@@ -2,35 +2,28 @@ const userModel = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 
 const isLoggedIn = async (req, res, next) => {
-  // const token = req.header('Authorization')?.replace('Bearer', '');
-
-  // try {
-  //   const decodedToken = jwt.verify(token, process.env.JWT);
-  //   const user = await User.findById(decodedToken?._id);
-
-  //   req.user = user;
-  //   next();
-
-  const token =
+  const accessToken =
     req.cookies?.accessToken ||
     req.header('Authorization')?.replace('Bearer ', '');
 
-  if (!token) {
-    throw new Error(401, 'Unauthorized request');
+  if (!accessToken) {
+    throw new Error('Unauthorized request', 401);
   }
 
   try {
-    const decodedToken = jwt.verify(token, process.env.JWT);
+    const decodedUser = jwt.verify(accessToken, process.env.JWT_SECRET);
     const user = await userModel
-      .findById(decodedToken?._id)
+      .findById(decodedUser?._id)
       .select('-password -refreshToken');
+
     if (!user) {
-      res.json('Invalid access token');
+      res.status(404).json({ message: 'Invalid access token' });
     }
+
     req.user = user;
     next();
   } catch (error) {
-    throw new Error(401, error.message || 'Invalid access token');
+    res.status(404).json({ message: 'Invalid access token' });
   }
 };
 

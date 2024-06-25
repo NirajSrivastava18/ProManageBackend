@@ -11,7 +11,7 @@ const isLoggedIn = async (req, res, next) => {
   }
 
   try {
-    const decodedUser = jwt.verify(accessToken, process.env.JWT_SECRET);
+    const decodedUser = jwt.verify(accessToken, process.env.JWT);
     const user = await userModel
       .findById(decodedUser?._id)
       .select('-password -refreshToken');
